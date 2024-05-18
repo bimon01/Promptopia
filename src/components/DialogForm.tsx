@@ -1,5 +1,4 @@
-// d:/Projects/Promptopia/src/components/DialogForm.tsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogFooter, DialogTitle } from "./ui/dialog";
 import { IPost } from "../../types/Type";
 import { Textarea } from "./ui/textarea";
@@ -49,43 +48,67 @@ const DialogForm: React.FC<DialogFormProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-h-[90vh] max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-lg dark:bg-gray-800 dark:text-gray-100">
-        <div className="flex flex-col gap-4">
-          <DialogTitle>{id ? "Edit Post" : "Create Post"}</DialogTitle>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <MessageInput
-              name="message"
-              value={formData.message}
-              onChange={updateFormData}
-            />
-            <TagInput
-              onKeyDown={handleTagInputChange}
-              onBlur={handleTagInputBlur}
-              onAddTag={handleAddTag}
-              isSubmitting={isSubmitting}
-            />
-            <TagList tags={formData.tag} onRemoveTag={removeTag} />
-            <MediaPreviews
-              selectedImage={selectedImage}
-              selectedAudio={selectedAudio}
-              audioObjectUrl={audioObjectUrl}
-              onRemoveImage={() => handleFileRemove("image")}
-              onRemoveAudio={() => handleFileRemove("audio")}
-            />
-            <FileUpload
-              onImageUpload={handleFileChange("image")}
-              onAudioUpload={handleFileChange("audio")}
-              isImageUploading={isImageUploading}
-              isAudioUploading={isAudioUploading}
-            />
-            <DialogFooter>
-              <SubmitButton
+      <DialogContent className="max-w-lg rounded-2xl bg-white p-4 shadow-lg dark:bg-gray-800 dark:text-gray-100 sm:p-6">
+        <div className="max-h-[90vh] overflow-y-auto">
+          <div className="flex flex-col gap-4">
+            <DialogTitle>{id ? "Edit Post" : "Create Post"}</DialogTitle>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              <MessageInput
+                name="message"
+                value={formData.message}
+                onChange={updateFormData}
+              />
+              <TagInput
+                onKeyDown={handleTagInputChange}
+                onBlur={handleTagInputBlur}
+                onAddTag={handleAddTag}
                 isSubmitting={isSubmitting}
+              />
+              <TagList tags={formData.tag} onRemoveTag={removeTag} />
+              <div className="flex flex-col gap-4">
+                <MediaPreviews
+                  selectedImage={selectedImage}
+                  selectedAudio={selectedAudio}
+                  audioObjectUrl={audioObjectUrl}
+                />
+                <div className="flex flex-wrap justify-center gap-4">
+                  {selectedImage && (
+                    <button
+                      type="button"
+                      onClick={() => handleFileRemove("image")}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      Remove Image
+                    </button>
+                  )}
+                  {selectedAudio && (
+                    <button
+                      type="button"
+                      onClick={() => handleFileRemove("audio")}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      Remove Audio
+                    </button>
+                  )}
+                </div>
+              </div>
+              <FileUpload
+                onImageUpload={handleFileChange("image")}
+                onAudioUpload={handleFileChange("audio")}
                 isImageUploading={isImageUploading}
                 isAudioUploading={isAudioUploading}
+                selectedImage={selectedImage}
+                selectedAudio={selectedAudio}
               />
-            </DialogFooter>
-          </form>
+              <DialogFooter>
+                <SubmitButton
+                  isSubmitting={isSubmitting}
+                  isImageUploading={isImageUploading}
+                  isAudioUploading={isAudioUploading}
+                />
+              </DialogFooter>
+            </form>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
@@ -98,16 +121,36 @@ const MessageInput: React.FC<{
   name: string;
   value: string;
   onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
-}> = ({ name, value, onChange }) => (
-  <Textarea
-    name={name}
-    placeholder="Enter your message here"
-    value={value}
-    onChange={onChange}
-    rows={8}
-    className="w-full"
-  />
-);
+}> = ({ name, value, onChange }) => {
+  const [rows, setRows] = useState(8);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 640) {
+        setRows(4);
+      } else {
+        setRows(8);
+      }
+    };
+
+    handleResize(); // Call once on mount
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  return (
+    <Textarea
+      name={name}
+      placeholder="Enter your message here"
+      value={value}
+      onChange={onChange}
+      rows={rows}
+      className="w-full overflow-auto"
+    />
+  );
+};
 
 const TagInput: React.FC<{
   onKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
@@ -169,32 +212,17 @@ const MediaPreviews: React.FC<{
   selectedImage: File | null;
   selectedAudio: File | null;
   audioObjectUrl: string | null;
-  onRemoveImage: () => void;
-  onRemoveAudio: () => void;
-}> = ({
-  selectedImage,
-  selectedAudio,
-  audioObjectUrl,
-  onRemoveImage,
-  onRemoveAudio,
-}) => (
+}> = ({ selectedImage, selectedAudio, audioObjectUrl }) => (
   <div className="flex flex-col gap-4">
     {selectedImage && (
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col items-center gap-2">
         <Image
           width={200}
           height={200}
           src={URL.createObjectURL(selectedImage)}
           alt="Preview"
-          className="h-auto w-full"
+          className="h-auto w-1/2 sm:w-full"
         />
-        <button
-          type="button"
-          onClick={onRemoveImage}
-          className="text-red-500 hover:text-red-700"
-        >
-          Remove Image
-        </button>
       </div>
     )}
     {selectedAudio && (
@@ -205,13 +233,6 @@ const MediaPreviews: React.FC<{
           preload="auto"
           className="w-full"
         />
-        <button
-          type="button"
-          onClick={onRemoveAudio}
-          className="text-red-500 hover:text-red-700"
-        >
-          Remove Audio
-        </button>
       </div>
     )}
   </div>
@@ -222,28 +243,41 @@ const FileUpload: React.FC<{
   onAudioUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
   isImageUploading: boolean;
   isAudioUploading: boolean;
-}> = ({ onImageUpload, onAudioUpload, isImageUploading, isAudioUploading }) => (
-  <div className="flex flex-col justify-center gap-4 sm:flex-row">
-    <label htmlFor="imageUpload" className="cursor-pointer">
-      {isImageUploading ? "Uploading..." : "Upload Image"}
-      <Input
-        id="imageUpload"
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={onImageUpload}
-      />
-    </label>
-    <label htmlFor="audioUpload" className="cursor-pointer">
-      {isAudioUploading ? "Uploading..." : "Upload Audio"}
-      <Input
-        id="audioUpload"
-        type="file"
-        accept="audio/*"
-        className="hidden"
-        onChange={onAudioUpload}
-      />
-    </label>
+  selectedImage: File | null;
+  selectedAudio: File | null;
+}> = ({
+  onImageUpload,
+  onAudioUpload,
+  isImageUploading,
+  isAudioUploading,
+  selectedImage,
+  selectedAudio,
+}) => (
+  <div className="flex flex-wrap justify-center gap-4">
+    {!selectedImage && (
+      <label htmlFor="imageUpload" className="cursor-pointer">
+        {isImageUploading ? "Uploading..." : "Upload Image"}
+        <Input
+          id="imageUpload"
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={onImageUpload}
+        />
+      </label>
+    )}
+    {!selectedAudio && (
+      <label htmlFor="audioUpload" className="cursor-pointer">
+        {isAudioUploading ? "Uploading..." : "Upload Audio"}
+        <Input
+          id="audioUpload"
+          type="file"
+          accept="audio/*"
+          className="hidden"
+          onChange={onAudioUpload}
+        />
+      </label>
+    )}
   </div>
 );
 
@@ -268,4 +302,3 @@ const SubmitButton: React.FC<{
 );
 
 export default DialogForm;
-
