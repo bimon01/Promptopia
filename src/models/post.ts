@@ -8,9 +8,8 @@ export const PostSchema = z.object({
     .max(5, "Maximum of 5 tags are allowed."),
   message: z
     .string()
-    .min(3, "The post message must be at least 3 characters long.")
-    .max(500, "The post message must be at most 500 characters long."),
-  creator: z.string(), 
+    .min(3, "The post message must be at least 3 characters long."),
+  creator: z.string(),
   imageUrl: z.string().optional(),
   audioUrl: z.string().optional(),
   createdAt: z.date().optional(),
