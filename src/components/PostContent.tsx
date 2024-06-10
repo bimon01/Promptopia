@@ -41,7 +41,7 @@ const PostContent: React.FC<PostContentProps> = ({ post, handleTagClick }) => {
   return (
     <div className="flex flex-col items-center justify-center rounded-lg text-center ">
       {post.imageUrl && (
-        <div className="mb-4 w-full sm:w-[200px] md:w-[400px] lg:w-[300px] xl:w-[300px]">
+        <div className="mb-4 w-[280px] sm:w-[200px] md:w-[400px] lg:w-[300px] xl:w-[300px]">
           <img
             src={post.imageUrl}
             alt="Description of the image"
