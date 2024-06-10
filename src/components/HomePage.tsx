@@ -89,7 +89,7 @@ const HomePage = () => {
           className="z-0 object-[left_-280px_top_0px] sm:object-center"
         />
         <section className="relative z-10 mt-[20%] flex flex-col items-center justify-center px-4 pb-10 font-inter text-white md:mt-[10%]">
-          <div className="container sm:-mt-20 text-center ">
+          <div className="container text-center sm:-mt-20 ">
             <h1 className="mb-4 text-5xl font-bold md:text-7xl">
               Build and Grow
             </h1>
@@ -119,7 +119,7 @@ const HomePage = () => {
           </div>
         </section>
       </div>
-      <div className="relative z-20 mt-[70vh] h-full w-full rounded-3xl py-1  bg-purple-900 bg-opacity-0 bg-clip-padding backdrop-blur-3xl backdrop-filter">
+      <div className="relative z-20 mt-[70vh] h-full w-full rounded-3xl bg-purple-900  bg-opacity-0 bg-clip-padding py-1 backdrop-blur-3xl backdrop-filter">
         <Feed
           posts={searchText ? searchedResults : allPosts}
           handleTagClick={handleTagClick}

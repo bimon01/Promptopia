@@ -17,12 +17,10 @@ import {
 import Image from "next/image";
 import { signIn, signOut, useSession, getProviders } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Button } from "./ui/button";
 import { useTheme } from "next-themes";
 import { Sun, Moon, SunMoon } from "lucide-react";
 import { cn } from "@src/lib/utils";
 import DialogForm from "./DialogForm";
-import Link from "next/link";
 
 export default function NavBar() {
   const [providers, setProviders] = useState<any | null>();
@@ -49,6 +47,7 @@ export default function NavBar() {
     router.replace("/");
   };
   const closeDialog = () => setShowDialog(!showDialog);
+    const openDialog = () => setShowDialog(true);
 
   const renderAuthButtons = () => {
     if (session) {
@@ -66,7 +65,7 @@ export default function NavBar() {
             Sign Out
           </button>{" "}
           <button
-            onClick={closeDialog}
+            onClick={openDialog}
             className={cn(
               "py-2 text-xs font-semibold transition duration-300 ease-in-out",
               theme === "light"

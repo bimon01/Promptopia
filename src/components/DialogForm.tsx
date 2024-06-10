@@ -7,6 +7,7 @@ import { Button } from "./ui/button";
 import { useUpload } from "@src/hooks/use-upload";
 import Image from "next/image";
 import { SendIcon, Tag } from "lucide-react";
+import { ScrollArea } from "./ui/scroll-area";
 
 type DialogFormProps = {
   open: boolean;
@@ -49,8 +50,8 @@ const DialogForm: React.FC<DialogFormProps> = ({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-lg rounded-2xl bg-white p-4 shadow-lg dark:bg-gray-800 dark:text-gray-100 sm:p-6">
-        <div className="max-h-[90vh] overflow-y-auto">
-          <div className="flex flex-col gap-4">
+        <ScrollArea className="max-h-[80vh]">
+          <div className="flex max-h-[80vh] flex-col gap-4 overflow-y-auto">
             <DialogTitle>{id ? "Edit Post" : "Create Post"}</DialogTitle>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <MessageInput
@@ -108,8 +109,8 @@ const DialogForm: React.FC<DialogFormProps> = ({
                 />
               </DialogFooter>
             </form>
-          </div>
-        </div>
+          </div>{" "}
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
@@ -122,32 +123,13 @@ const MessageInput: React.FC<{
   value: string;
   onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }> = ({ name, value, onChange }) => {
-  const [rows, setRows] = useState(8);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 640) {
-        setRows(4);
-      } else {
-        setRows(8);
-      }
-    };
-
-    handleResize(); // Call once on mount
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
   return (
     <Textarea
       name={name}
       placeholder="Enter your message here"
       value={value}
       onChange={onChange}
-      rows={rows}
-      className="w-full overflow-auto"
+      className="h-40 max-h-[80vh] w-full resize-none overflow-y-auto"
     />
   );
 };
