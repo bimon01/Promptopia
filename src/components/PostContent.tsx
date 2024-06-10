@@ -48,6 +48,7 @@ const PostContent: React.FC<PostContentProps> = ({ post, handleTagClick }) => {
             width={300}
             height={200}
             className="h-auto w-full rounded-2xl object-cover"
+            onError={(e) => console.error("Image failed to load", e)}
           />
         </div>
       )}
