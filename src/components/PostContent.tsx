@@ -42,14 +42,19 @@ const PostContent: React.FC<PostContentProps> = ({ post, handleTagClick }) => {
     <div className="flex flex-col items-center justify-center rounded-lg text-center ">
       {post.imageUrl && (
         <div className="mb-4 w-full sm:w-[200px] md:w-[400px] lg:w-[300px] xl:w-[300px]">
-          <Image
+          <img
+            src={post.imageUrl}
+            alt="Description of the image"
+            className="h-auto w-full rounded-2xl object-cover"
+          />
+          {/* <Image
             src={post.imageUrl}
             alt="Description of the image"
             width={300}
             height={200}
             className="h-auto w-full rounded-2xl object-cover"
             onError={(e) => console.error("Image failed to load", e)}
-          />
+          /> */}
         </div>
       )}
       {post.message && (
